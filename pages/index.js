@@ -1,78 +1,216 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { useState } from "react";
 
 export default function Home() {
+  const [purpose, setPurpose] = useState("a new MacDonalds");
+
+  const [preferences, setPreferences] = useState(
+    "size 2 acres plus, corner lot, no MacDonalds within 2 KM, traffic is good"
+  );
+
+  const [bestFits, setBestFits] = useState([]);
+  const [tokenUsage, setTokenUsage] = useState(null);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const findLands = async () => {
+    setLoading(true);
+    setError("");
+
+    setBestFits([]);
+    setTokenUsage(null);
+
+    try {
+      const response = await fetch("/api/listings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          purpose,
+          preferences,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.details || data.error || "Search failed");
+      }
+
+      setBestFits(data.bestFits || []);
+      setTokenUsage(data.tokenUsage || null);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.js file.
+    <div className="min-h-screen bg-slate-100 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white rounded-2xl shadow p-6 mb-6">
+          <h1 className="text-3xl font-bold text-slate-900">
+            AI Land Search
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+          <p className="text-slate-600 mt-2">
+            Find the best land opportunities based on your purpose and
+            preferences.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+
+        <div className="bg-white rounded-2xl shadow p-6 mb-6">
+          <label className="block mb-5">
+            <span className="block text-sm font-semibold text-slate-700 mb-2">
+              Purpose
+            </span>
+
+            <input
+              type="text"
+              value={purpose}
+              onChange={(e) => setPurpose(e.target.value)}
+              className="w-full border border-slate-300 rounded-xl p-4"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </label>
+
+          <label className="block mb-6">
+            <span className="block text-sm font-semibold text-slate-700 mb-2">
+              Preferences
+            </span>
+
+            <textarea
+              rows={5}
+              value={preferences}
+              onChange={(e) => setPreferences(e.target.value)}
+              className="w-full border border-slate-300 rounded-xl p-4"
+            />
+          </label>
+
+          <button
+            onClick={findLands}
+            disabled={loading}
+            className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white px-8 py-4 rounded-xl font-bold"
           >
-            Documentation
-          </a>
+            {loading ? "Searching..." : "Find Lands"}
+          </button>
+
+          {error && (
+            <div className="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4">
+              {error}
+            </div>
+          )}
         </div>
-      </main>
+
+        {loading && (
+          <div className="bg-white rounded-2xl shadow p-8 text-center mb-6">
+            <div className="text-xl font-bold">
+              Searching listings...
+            </div>
+          </div>
+        )}
+
+        {!loading && bestFits.length > 0 && (
+          <div className="bg-white rounded-2xl shadow p-6 mb-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">
+              Best preliminary fits from LoopNet
+            </h2>
+
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-slate-100 text-left">
+                    <th className="p-3 border">Rank</th>
+                    <th className="p-3 border">Property</th>
+                    <th className="p-3 border">Size</th>
+                    <th className="p-3 border">
+                      Why it may fit
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+  {bestFits.map((item, index) => (
+    <tr key={index}>
+      <td className="p-3 border font-bold">
+        {item.rank || index + 1}
+      </td>
+
+      <td className="p-3 border font-semibold">
+        <div>{item.property}</div>
+
+        <div className="mt-2">
+          <span className="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+            Score: {item.score || 0}/100
+          </span>
+        </div>
+      </td>
+
+      <td className="p-3 border">
+        {item.size}
+      </td>
+
+      <td className="p-3 border text-slate-700">
+        {item.whyItMayFit}
+      </td>
+    </tr>
+  ))}
+</tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {!loading && tokenUsage && (
+          <div className="bg-white rounded-2xl shadow p-6">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">
+              Token Usage
+            </h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-slate-100 rounded-xl p-4">
+                <div className="text-sm text-slate-500">
+                  Input
+                </div>
+
+                <div className="text-2xl font-bold">
+                  {tokenUsage.inputTokens}
+                </div>
+              </div>
+
+              <div className="bg-slate-100 rounded-xl p-4">
+                <div className="text-sm text-slate-500">
+                  Output
+                </div>
+
+                <div className="text-2xl font-bold">
+                  {tokenUsage.outputTokens}
+                </div>
+              </div>
+
+              <div className="bg-slate-100 rounded-xl p-4">
+                <div className="text-sm text-slate-500">
+                  Total
+                </div>
+
+                <div className="text-2xl font-bold">
+                  {tokenUsage.totalTokens}
+                </div>
+              </div>
+
+              <div className="bg-green-100 rounded-xl p-4">
+                <div className="text-sm text-green-700">
+                  Approx Cost
+                </div>
+
+                <div className="text-2xl font-bold text-green-800">
+                  ${tokenUsage.approxCostUSD}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
