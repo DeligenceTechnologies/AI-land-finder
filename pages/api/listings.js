@@ -115,11 +115,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { purpose, preferences } = req.body || {};
+    const { purpose, preferences: rawPreferences } = req.body || {};
+    const preferences = rawPreferences?.trim() || "No specific criteria; rank by general suitability for the intended use";
 
-    if (!purpose || !preferences) {
+    if (!purpose) {
       return res.status(400).json({
-        error: "Purpose and preferences are required",
+        error: "Purpose is required",
       });
     }
 
@@ -135,7 +136,7 @@ export default async function handler(req, res) {
       });
     }
 
-    const searchQueries = buildSearchQueries(purpose, preferences);
+    const searchQueries = buildSearchQueries(purpose, rawPreferences?.trim() || "");
 
     const searchBatches = await Promise.all(
       searchQueries.map((query) => tavilySearch(query))
