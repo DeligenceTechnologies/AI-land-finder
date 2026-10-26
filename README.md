@@ -559,17 +559,16 @@ The long-term vision is to make site-selection research more intelligent, access
 ---
 
 
+
 ## 15. License
 
-Copyright © 2026 Deligence Technologies. All rights reserved.
+AI Land Finder is open-source software licensed under the MIT License.
 
-AI Land Finder is proprietary software developed and maintained by Deligence Technologies.
+Copyright © 2026 Deligence Technologies.
 
-The source code, application architecture, business logic, documentation, and related materials are intended for authorized use only.
+You are free to use, copy, modify, distribute, and commercially use this software under the terms of the MIT License.
 
-No permission is granted to copy, modify, distribute, sublicense, or commercially use this software without prior written authorization from Deligence Technologies.
-
-For licensing, partnerships, or commercial inquiries, please contact Deligence Technologies.
+See the [LICENSE](LICENSE) file for the complete license terms.
 
 
 
