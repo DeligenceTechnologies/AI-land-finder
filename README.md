@@ -558,11 +558,19 @@ The long-term vision is to make site-selection research more intelligent, access
 
 ---
 
+
 ## 15. License
 
-License terms have not yet been specified.
+Copyright © 2026 Deligence Technologies. All rights reserved.
 
-Before distributing or publishing the application, add the appropriate license and usage terms.
+AI Land Finder is proprietary software developed and maintained by Deligence Technologies.
+
+The source code, application architecture, business logic, documentation, and related materials are intended for authorized use only.
+
+No permission is granted to copy, modify, distribute, sublicense, or commercially use this software without prior written authorization from Deligence Technologies.
+
+For licensing, partnerships, or commercial inquiries, please contact Deligence Technologies.
+
 
 
 
