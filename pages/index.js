@@ -1,40 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 
-const PRESETS = [
-  {
-    label: "Quick-service restaurant",
-    purpose: "a new McDonald's",
-    preferences:
-      "size 2 acres plus, corner lot, no McDonald's within 2 KM, traffic is good",
-  },
-  {
-    label: "Medical clinic",
-    purpose: "a medical clinic",
-    preferences:
-      "1 to 3 acres, near residential neighborhoods, easy parking access, visible from a main road",
-  },
-  {
-    label: "EV charging hub",
-    purpose: "an EV charging station",
-    preferences:
-      "near an interstate exit, at least 1 acre, high traffic, close to food and retail",
-  },
-  {
-    label: "Logistics warehouse",
-    purpose: "a warehouse / logistics facility",
-    preferences:
-      "5 acres plus, industrial zoning, close to interstate access, room for truck circulation",
-  },
-];
-
-const CUSTOM_PRESET = { label: "Other / custom", purpose: "", preferences: "" };
-
-const SORTS = {
-  score: { label: "Best match", fn: (a, b) => clampScore(b.score) - clampScore(a.score) },
-  size: { label: "Lot size", fn: (a, b) => parseAcres(b.size) - parseAcres(a.size) },
-  rank: { label: "AI rank", fn: (a, b) => (a.rank || 0) - (b.rank || 0) },
-};
-
 const LOADING_STEPS = [
   "Searching commercial land listings",
   "Reading listing details",
@@ -58,7 +23,7 @@ function fitLevel(score) {
       stripe: "bg-emerald-500",
       bar: "bg-emerald-500",
       chip: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-      score: "text-emerald-700",
+      score: "text-emerald-600",
     };
   }
   if (score >= 50) {
@@ -67,15 +32,15 @@ function fitLevel(score) {
       stripe: "bg-amber-400",
       bar: "bg-amber-400",
       chip: "bg-amber-50 text-amber-800 ring-amber-600/20",
-      score: "text-amber-700",
+      score: "text-orange-500",
     };
   }
   return {
     label: "Limited fit",
-    stripe: "bg-rose-400",
-    bar: "bg-rose-400",
+    stripe: "bg-rose-500",
+    bar: "bg-rose-500",
     chip: "bg-rose-50 text-rose-700 ring-rose-600/20",
-    score: "text-rose-600",
+    score: "text-rose-500",
   };
 }
 
@@ -143,24 +108,24 @@ function SitePlan({ seed = 0, className = "" }) {
     <svg viewBox="0 0 360 180" preserveAspectRatio="xMidYMid slice" className={className} aria-hidden="true">
       <defs>
         <pattern id={id} width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="7" stroke="#0d9488" strokeOpacity="0.25" strokeWidth="2" />
+          <line x1="0" y1="0" x2="0" y2="7" stroke="var(--primary)" strokeOpacity="0.35" strokeWidth="2" />
         </pattern>
       </defs>
-      <rect width="360" height="180" fill="#e2e8f0" />
-      <g fill="#d5dde7">
+      <rect width="360" height="180" fill="var(--map)" />
+      <g fill="var(--map-block)">
         <rect x="0" y="0" width="80" height="66" rx="3" />
         <rect x="0" y="78" width="80" height="62" rx="3" />
         <rect x="290" y="0" width="70" height="140" rx="3" />
       </g>
-      <g fill="#c9e4dc">
+      <g fill="var(--map-tree)">
         <circle cx="34" cy="112" r="13" />
         <circle cx="322" cy="44" r="17" />
         <circle cx="54" cy="26" r="9" />
       </g>
-      <path d="M0 156 H360" stroke="#f8fafc" strokeWidth="20" />
-      <path d="M272 0 V180" stroke="#f8fafc" strokeWidth="18" />
-      <path d="M0 156 H360 M272 0 V180" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="6 6" />
-      <path d={d} fill="#14b8a6" fillOpacity="0.16" stroke="#0d9488" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M0 156 H360" stroke="var(--map-road)" strokeWidth="20" />
+      <path d="M272 0 V180" stroke="var(--map-road)" strokeWidth="18" />
+      <path d="M0 156 H360 M272 0 V180" stroke="var(--map-block)" strokeWidth="1" strokeDasharray="6 6" />
+      <path d={d} fill="var(--primary)" fillOpacity="0.18" stroke="var(--primary)" strokeWidth="2" strokeLinejoin="round" />
       <path d={d} fill={`url(#${id})`} />
     </svg>
   );
@@ -172,12 +137,12 @@ function Explanation({ text }) {
   const long = text.length > 180;
   return (
     <div>
-      <p className={`text-sm leading-relaxed text-slate-600 ${!open && long ? "line-clamp-2" : ""}`}>{text}</p>
+      <p className={`text-sm leading-relaxed text-ink-soft ${!open && long ? "line-clamp-2" : ""}`}>{text}</p>
       {long && (
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="mt-1 text-[13px] font-semibold text-teal-700 hover:text-teal-800"
+          className="mt-1 text-[13px] font-semibold text-primary-ink hover:text-primary-strong"
         >
           {open ? "Show less" : "Read more"}
         </button>
@@ -191,38 +156,40 @@ function ResultCard({ item, index, top }) {
   const fit = fitLevel(score);
   return (
     <article
-      className={`relative overflow-hidden rounded-xl border bg-white transition hover:shadow-md ${
-        top ? "border-teal-200 shadow-sm ring-1 ring-teal-100" : "border-slate-200"
+      className={`relative overflow-hidden rounded-xl border bg-surface transition hover:shadow-md ${
+        top ? "border-primary-muted shadow-md ring-1 ring-primary-muted" : "border-line shadow-sm"
       }`}
     >
       <span className={`absolute inset-y-0 left-0 w-1 ${fit.stripe}`} />
-      <div className="grid gap-4 p-4 pl-5 sm:grid-cols-[132px_minmax(0,1fr)_120px] sm:items-start">
-        <div className="relative h-28 overflow-hidden rounded-lg sm:h-24">
-          <SitePlan seed={index} className="h-full w-full" />
-          <span className="absolute left-1.5 top-1.5 rounded-md bg-slate-900/85 px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-white">
-            #{item.rank || index + 1}
-          </span>
+      <div className="grid gap-4 p-4 pl-5 sm:grid-cols-[140px_minmax(0,1fr)_120px] sm:items-start">
+        <div>
+          <div className="relative h-28 overflow-hidden rounded-lg sm:h-24">
+            <SitePlan seed={index} className="h-full w-full" />
+            <span className="absolute left-1.5 top-1.5 rounded-md bg-accent px-1.5 py-0.5 text-[11px] font-semibold tabular-nums text-on-accent shadow-sm">
+              #{item.rank || index + 1}
+            </span>
+          </div>
+          {item.size && (
+            <div className="mt-2 flex items-center justify-center gap-1.5 rounded-md bg-accent-soft px-2 py-1 text-xs font-semibold text-accent-ink">
+              <Icon name="area" className="h-3.5 w-3.5" />
+              {item.size}
+            </div>
+          )}
         </div>
 
         <div className="min-w-0">
           {top && (
-            <div className="mb-1 inline-flex items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-teal-700">
+            <div className="mb-1 inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-on-primary">
               <Icon name="spark" className="h-3.5 w-3.5" /> Top recommendation
             </div>
           )}
-          <h3 className="text-[17px] font-semibold leading-snug text-slate-900 break-words">
+          <h3 className="text-[17px] font-semibold leading-snug text-ink break-words">
             {item.property || "Unnamed property"}
           </h3>
           <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-xs">
-            <span className="inline-flex items-center gap-1 text-slate-500">
+            <span className="inline-flex items-center gap-1 text-ink-faint">
               <Icon name="pin" className="h-3.5 w-3.5" /> Nashville, TN
             </span>
-            {item.size && (
-              <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-1.5 py-0.5 font-medium text-slate-700">
-                <Icon name="area" className="h-3.5 w-3.5 text-slate-500" />
-                {item.size}
-              </span>
-            )}
             <span className={`rounded-md px-1.5 py-0.5 font-semibold ring-1 ring-inset ${fit.chip}`}>{fit.label}</span>
           </div>
           <div className="mt-2.5">
@@ -230,13 +197,13 @@ function ResultCard({ item, index, top }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 border-t border-slate-100 pt-3 sm:block sm:border-0 sm:pt-0 sm:text-right">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Match</div>
+        <div className="flex items-center gap-3 border-t border-line pt-3 sm:block sm:border-0 sm:pt-0 sm:text-right">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">Match</div>
           <div className={`text-2xl font-bold tabular-nums ${fit.score}`}>
             {score}
-            <span className="text-sm font-medium text-slate-400">/100</span>
+            <span className="text-sm font-medium text-ink-faint">/100</span>
           </div>
-          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100 sm:mt-2">
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted sm:mt-2">
             <div className={`h-full rounded-full ${fit.bar} transition-all duration-700`} style={{ width: `${score}%` }} />
           </div>
         </div>
@@ -247,16 +214,16 @@ function ResultCard({ item, index, top }) {
 
 function SkeletonCard() {
   return (
-    <div className="grid animate-pulse gap-4 rounded-xl border border-slate-200 bg-white p-4 sm:grid-cols-[132px_1fr_120px]">
-      <div className="h-24 rounded-lg bg-slate-100" />
+    <div className="grid animate-pulse gap-4 rounded-xl border border-line bg-surface p-4 sm:grid-cols-[140px_1fr_120px]">
+      <div className="h-24 rounded-lg bg-muted" />
       <div className="space-y-2.5 py-1">
-        <div className="h-5 w-2/3 rounded bg-slate-200" />
-        <div className="h-3 w-1/3 rounded bg-slate-100" />
-        <div className="h-3 w-full rounded bg-slate-100" />
+        <div className="h-5 w-2/3 rounded bg-line" />
+        <div className="h-3 w-1/3 rounded bg-muted" />
+        <div className="h-3 w-full rounded bg-muted" />
       </div>
       <div className="hidden space-y-2 py-1 sm:block">
-        <div className="ml-auto h-6 w-16 rounded bg-slate-100" />
-        <div className="h-1.5 w-full rounded bg-slate-100" />
+        <div className="ml-auto h-6 w-16 rounded bg-muted" />
+        <div className="h-1.5 w-full rounded bg-muted" />
       </div>
     </div>
   );
@@ -272,11 +239,13 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
-  const [sortBy, setSortBy] = useState("score");
   const [loadingStep, setLoadingStep] = useState(0);
 
-  const canSearch = purpose.trim().length > 0 && !loading;
-  const sorted = useMemo(() => [...bestFits].sort(SORTS[sortBy].fn), [bestFits, sortBy]);
+  const canSearch = purpose.trim().length > 0 && preferences.trim().length > 0 && !loading;
+  const sorted = useMemo(
+    () => [...bestFits].sort((a, b) => clampScore(b.score) - clampScore(a.score)),
+    [bestFits]
+  );
   const topScore = sorted.length ? Math.max(...sorted.map((r) => clampScore(r.score))) : 0;
 
   useEffect(() => {
@@ -335,18 +304,18 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-100 text-slate-900">
+    <div className="flex min-h-screen flex-col text-ink">
       {/* App bar */}
-      <header className="sticky top-0 z-20 border-b border-slate-800 bg-slate-900">
+      <header className="sticky top-0 z-20 [background:var(--header)] shadow-sm">
         <div className="flex h-14 items-center justify-between px-4 sm:px-6">
-          <div className="flex items-center gap-3">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-to-br from-teal-400 to-cyan-600 text-white shadow-sm">
+          <div className="flex shrink-0 items-center gap-3">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-white/20 text-white shadow-sm ring-1 ring-white/30">
               <Icon name="layers" />
             </span>
-            <span className="text-[15px] font-semibold text-white">AI Land Finder</span>
-            <span className="hidden h-5 w-px bg-slate-700 sm:block" />
-            <span className="hidden items-center gap-1.5 rounded-md bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-200 sm:inline-flex">
-              <Icon name="pin" className="h-3.5 w-3.5 text-teal-400" /> Nashville, TN
+            <span className="whitespace-nowrap text-[15px] font-semibold text-white">AI Land Finder</span>
+            <span className="hidden h-5 w-px bg-white/30 sm:block" />
+            <span className="hidden items-center gap-1.5 rounded-md bg-white/15 px-2.5 py-1 text-xs font-medium text-white ring-1 ring-white/20 sm:inline-flex">
+              <Icon name="pin" className="h-3.5 w-3.5 text-accent" /> Nashville, TN
             </span>
           </div>
         </div>
@@ -354,77 +323,49 @@ export default function Home() {
 
       <div className="flex flex-1 flex-col lg:flex-row">
         {/* Search panel */}
-        <aside className="border-b border-slate-200 bg-white lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:w-[380px] lg:shrink-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
+        <aside className="border-b border-line [background:var(--sidebar)] lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)] lg:w-[380px] lg:shrink-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
           <form onSubmit={handleSubmit} className="flex h-full flex-col p-5 sm:p-6">
             <div>
-              <h1 className="text-base font-semibold text-slate-900">New site search</h1>
-              <p className="mt-1 text-sm text-slate-500">Describe the project and the criteria that matter.</p>
+              <h1 className="text-base font-semibold text-ink">New site search</h1>
+              <p className="mt-1 text-sm text-ink-faint">
+                Describe the project and the criteria that matter. Fields marked <span className="text-rose-500">*</span> are required.
+              </p>
             </div>
 
             <label className="mt-6 block">
-              <span className="mb-1.5 block text-sm font-semibold text-slate-800">Intended use</span>
+              <span className="mb-1.5 block text-sm font-semibold text-ink">
+                Intended use <span className="text-rose-500">*</span>
+              </span>
               <input
                 type="text"
                 value={purpose}
                 onChange={(e) => setPurpose(e.target.value)}
+                required
                 placeholder="e.g. a drive-thru coffee shop"
-                className="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15"
+                className="w-full rounded-lg border border-line bg-surface px-3.5 py-2.5 text-[15px] text-ink placeholder:text-ink-faint outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/20"
               />
             </label>
 
             <label className="mt-4 block">
-              <span className="mb-1.5 block text-sm font-semibold text-slate-800">
-                Site criteria <span className="font-normal text-slate-400">(optional)</span>
+              <span className="mb-1.5 block text-sm font-semibold text-ink">
+                Site criteria <span className="text-rose-500">*</span>
               </span>
               <textarea
                 rows={5}
                 value={preferences}
                 onChange={(e) => setPreferences(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Lot size, corner lot, traffic, nearby competitors, zoning…"
-                className="w-full resize-y rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-[15px] leading-relaxed text-slate-900 placeholder:text-slate-400 outline-none transition focus:border-teal-600 focus:ring-4 focus:ring-teal-600/15"
+                required
+                placeholder="e.g. 2+ acres, corner lot, high traffic, no competitors within 2 km, commercial zoning"
+                className="w-full resize-y rounded-lg border border-line bg-surface px-3.5 py-2.5 text-[15px] leading-relaxed text-ink placeholder:text-ink-faint outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/20"
               />
             </label>
-
-            <div className="mt-4">
-              <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Presets <span className="font-normal normal-case tracking-normal text-slate-400">(optional)</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {[...PRESETS, CUSTOM_PRESET].map((preset) => {
-                  const active =
-                    preset === CUSTOM_PRESET
-                      ? !PRESETS.some((p) => p.purpose === purpose && p.preferences === preferences)
-                      : preset.purpose === purpose && preset.preferences === preferences;
-                  return (
-                    <button
-                      key={preset.label}
-                      type="button"
-                      aria-pressed={active}
-                      onClick={() => {
-                        // Clicking an active preset (or "Custom") clears the form for free-form input
-                        const clear = active || preset === CUSTOM_PRESET;
-                        setPurpose(clear ? "" : preset.purpose);
-                        setPreferences(clear ? "" : preset.preferences);
-                      }}
-                      className={`rounded-full border px-3 py-1.5 text-[13px] font-medium transition ${
-                        active
-                          ? "border-teal-600 bg-teal-50 text-teal-800"
-                          : "border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50"
-                      }`}
-                    >
-                      {preset.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
 
             <div className="mt-6 lg:mt-auto lg:pt-6">
               <button
                 type="submit"
                 disabled={!canSearch}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-5 py-3 text-[15px] font-semibold text-white shadow-sm transition hover:bg-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-600/25 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-600"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-lg [background:var(--cta)] px-5 py-3 text-[15px] font-semibold text-on-primary shadow-md shadow-primary/25 transition hover:brightness-110 focus:outline-none focus:ring-4 focus:ring-primary/25 disabled:cursor-not-allowed disabled:[background:var(--line)] disabled:text-ink-faint disabled:shadow-none"
               >
                 {loading ? (
                   <>
@@ -436,7 +377,7 @@ export default function Home() {
                   </>
                 )}
               </button>
-              <p className="mt-2 text-center text-xs text-slate-400">⌘/Ctrl + Enter to search</p>
+              <p className="mt-2 text-center text-xs text-ink-faint">⌘/Ctrl + Enter to search</p>
             </div>
           </form>
         </aside>
@@ -455,16 +396,16 @@ export default function Home() {
 
           {loading && (
             <div aria-live="polite">
-              <div className="mb-5 rounded-xl border border-teal-200 bg-teal-50 p-4">
-                <div className="flex items-center gap-2.5 text-sm font-semibold text-teal-900">
-                  <Spinner className="h-4 w-4 text-teal-600" />
+              <div className="mb-5 rounded-xl border border-primary-muted bg-primary-soft p-4">
+                <div className="flex items-center gap-2.5 text-sm font-semibold text-primary-ink">
+                  <Spinner className="h-4 w-4 text-primary" />
                   {LOADING_STEPS[loadingStep]}…
                 </div>
                 <div className="mt-3 grid grid-cols-4 gap-1.5">
                   {LOADING_STEPS.map((step, i) => (
                     <div
                       key={step}
-                      className={`h-1.5 rounded-full transition-colors duration-500 ${i <= loadingStep ? "bg-teal-500" : "bg-teal-100"}`}
+                      className={`h-1.5 rounded-full transition-colors duration-500 ${i <= loadingStep ? "bg-primary" : "bg-primary-muted"}`}
                     />
                   ))}
                 </div>
@@ -481,45 +422,28 @@ export default function Home() {
             <div aria-live="polite">
               <div className="mb-5 grid grid-cols-3 gap-3">
                 {[
-                  ["Sites found", sorted.length, "text-slate-900"],
-                  ["Best score", topScore, "text-emerald-700"],
-                  ["Strong fits", sorted.filter((r) => clampScore(r.score) >= 75).length, "text-teal-700"],
+                  ["Sites found", sorted.length, "text-ink"],
+                  ["Best score", topScore, "text-primary-ink"],
+                  ["Strong fits", sorted.filter((r) => clampScore(r.score) >= 75).length, "text-emerald-600"],
                 ].map(([label, value, tone]) => (
-                  <div key={label} className="rounded-xl border border-slate-200 bg-white px-4 py-3">
-                    <div className="text-xs font-medium text-slate-500">{label}</div>
+                  <div key={label} className="rounded-xl border border-line bg-surface px-4 py-3">
+                    <div className="text-xs font-medium text-ink-faint">{label}</div>
                     <div className={`mt-0.5 text-2xl font-bold tabular-nums ${tone}`}>{value}</div>
                   </div>
                 ))}
               </div>
 
-              <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="text-sm font-semibold text-slate-700">
-                  Results for <span className="text-slate-900">{purpose.trim() || "your project"}</span>
-                </h2>
-                <div className="inline-flex self-start rounded-lg border border-slate-200 bg-white p-0.5 sm:self-auto" role="group" aria-label="Sort results">
-                  {Object.entries(SORTS).map(([key, s]) => (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => setSortBy(key)}
-                      aria-pressed={sortBy === key}
-                      className={`rounded-md px-3 py-1.5 text-[13px] font-semibold transition ${
-                        sortBy === key ? "bg-slate-900 text-white" : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <h2 className="mb-3 text-sm font-semibold text-ink-soft">
+                Results for <span className="text-ink">{purpose.trim() || "your project"}</span>
+              </h2>
 
               <div className="grid gap-3">
                 {sorted.map((item, i) => (
-                  <ResultCard key={`${item.property}-${i}`} item={item} index={i} top={i === 0 && sortBy === "score"} />
+                  <ResultCard key={`${item.property}-${i}`} item={item} index={i} top={i === 0} />
                 ))}
               </div>
 
-              <div className="mt-6 flex flex-col gap-2 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-6 flex flex-col gap-2 text-xs text-ink-faint sm:flex-row sm:items-center sm:justify-between">
                 <span>Preliminary AI screen. Confirm zoning, availability and pricing with the listing broker.</span>
                 {tokenUsage && (
                   <span className="tabular-nums" title={`Input ${tokenUsage.inputTokens} · Output ${tokenUsage.outputTokens}`}>
@@ -551,12 +475,12 @@ export default function Home() {
 
 function EmptyState({ title, body }) {
   return (
-    <div className="flex h-full min-h-[320px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-      <div className="grid h-12 w-12 place-items-center rounded-xl bg-teal-50 text-teal-600">
+    <div className="flex h-full min-h-[320px] flex-col items-center justify-center rounded-xl border border-dashed border-primary-muted bg-surface/80 px-6 py-12 text-center">
+      <div className="grid h-12 w-12 place-items-center rounded-xl [background:var(--cta)] text-on-primary shadow-md shadow-primary/25">
         <Icon name="search" className="h-6 w-6" />
       </div>
-      <div className="mt-4 text-base font-semibold text-slate-900">{title}</div>
-      <p className="mt-1 max-w-sm text-sm text-slate-500">{body}</p>
+      <div className="mt-4 text-base font-semibold text-ink">{title}</div>
+      <p className="mt-1 max-w-sm text-sm text-ink-faint">{body}</p>
     </div>
   );
 }

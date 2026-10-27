@@ -1,6 +1,56 @@
 @import "tailwindcss";
 
+/* Color palette (Royal blue & amber) */
+:root {
+  --header: linear-gradient(90deg, #1e3a8a, #2563eb);
+  --backdrop: radial-gradient(900px 500px at 100% 0%, #dbeafe 0%, transparent 60%), radial-gradient(800px 600px at 0% 100%, #fef3c7 0%, transparent 60%), #f4f7fd;
+  --sidebar: linear-gradient(180deg, #eef4ff 0%, #f4f7fd 100%);
+  --cta: linear-gradient(90deg, #1d4ed8, #2563eb);
+  --primary: #2563eb;
+  --primary-strong: #1d4ed8;
+  --primary-ink: #1d4ed8;
+  --primary-soft: #eff6ff;
+  --primary-muted: #bfdbfe;
+  --on-primary: #ffffff;
+  --accent: #f59e0b;
+  --accent-ink: #b45309;
+  --accent-soft: #fef3c7;
+  --on-accent: #1f1300;
+  --page: #f4f7fd;
+  --surface: #ffffff;
+  --muted: #eaf0fb;
+  --line: #d7e1f3;
+  --ink: #0f1a33;
+  --ink-soft: #42506b;
+  --ink-faint: #8592a8;
+  --map: #e6edf9;
+  --map-block: #cfdaf0;
+  --map-tree: #bbf7d0;
+  --map-road: #ffffff;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-strong: var(--primary-strong);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-soft: var(--primary-soft);
+  --color-primary-muted: var(--primary-muted);
+  --color-on-primary: var(--on-primary);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-ink-faint: var(--ink-faint);
+}
+
 body {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--backdrop);
+  background-attachment: fixed;
+  color: var(--ink);
 }
